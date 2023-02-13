@@ -1,12 +1,11 @@
 package software.architecture.demo.api;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import software.architecture.demo.bl.CurrencyBl;
+import software.architecture.demo.dto.CurrencyDto;
+import software.architecture.demo.dto.ResponseDto;
 import java.math.BigDecimal;
-import java.util.Map;
 
 
 @RestController
@@ -17,12 +16,10 @@ public class CurrencyApi {
     public CurrencyApi(CurrencyBl currencyBl) {
         this.currencyBl = currencyBl;
     }
-    @GetMapping("/recieve")
-    public String recieve(@RequestHeader Map<String, String> headers) throws Exception {
-        String from = headers.get("from");
-        String to = headers.get("to");
-        BigDecimal amount = headers.get("amount") != null ? new BigDecimal(headers.get("amount")) : null;
-        currencyBl.recieve(from, to, amount);
-        return "Hello World";
+    @GetMapping("/exchange")
+    public ResponseEntity<ResponseDto<CurrencyDto>> exchange(@RequestParam String from, @RequestParam String to, @RequestParam BigDecimal amount) throws Exception {
+        CurrencyDto currencyDto = currencyBl.exchange(from, to, amount);
+        ResponseDto<CurrencyDto> responseDto = new ResponseDto<CurrencyDto>(currencyDto,"Success", true);
+        return ResponseEntity.ok(responseDto);
     }
 }
